@@ -49,20 +49,23 @@ RUN virtualenv /home/quality_assurance/env
 # Make the virtual environment active
 RUN source /home/quality_assurance/env/bin/activate
 
+# Install Pysolr
+RUN pip install pysolr
+
 # Install django
-RUN pip install django
+#RUN pip install django
 
 # Start the new django project in the current directory
-RUN django-admin.py startproject dashboard
+#RUN django-admin.py startproject dashboard
 
 # Copy uwsgi params file into the docker container
 ADD ./nginx/uwsgi_params /home/quality_assurance/dashboard/uwsgi_params
 
 # Copy nginx config file needed for server settings
-# ADD ./nginx/xbrl_nginx.conf /home/search/xbrl/xbrl_nginx.conf
+# ADD ./nginx/dashboard_nginx.conf /home/quality_assurance/dashboard/dashboard/dashboard_nginx.conf
 
 # Symlink the newly added config file to /etc/nginx/conf.d/
-#RUN ln -s /home/search/xbrl/xbrl_nginx.conf /etc/nginx/conf.d/
+#RUN ln -s /home/quality_assurance/dashboard/dashboard_nginx.conf /etc/nginx/conf.d/
 
 # Copy settings
 #ADD ./django/solr_search/ /home/search/xbrl/solr_search
@@ -73,50 +76,19 @@ ADD ./nginx/uwsgi_params /home/quality_assurance/dashboard/uwsgi_params
 # Make port 8000 available to host
 EXPOSE 8000
 
-# Install Postgresql-9.3
-# Add the PostgreSQL PGP key to verify their Debian packages.
-# It should be the same key as https://www.postgresql.org/media/keys/ACCC4CF8.asc
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
 
-# Add PostgreSQL's repository. It contains the most recent stable release
-#     of PostgreSQL, ``9.3``.
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+# Installing Postgres
+ADD ./postgres/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo
 
-# Update the Ubuntu and PostgreSQL repository indexes
-RUN apt-get update
+RUN yum localinstall -y http://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-centos93-9.3-1.noarch.rpm
 
-# Install ``python-software-properties``, ``software-properties-common`` and PostgreSQL 9.3
-#  There are some warnings (in red) that show up during the build. You can hide
-#  them by prefixing each apt-get statement with DEBIAN_FRONTEND=noninteractive
-RUN apt-get -y -q install python-software-properties software-properties-common
-RUN apt-get -y -q install postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3
+RUN yum install -y postgresql93-server
 
-# Note: The official Debian and Ubuntu images automatically ``apt-get clean``
-# after each ``apt-get``
+RUN service postgresql-9.3 initdb
 
-# Run the rest of the commands as the ``postgres`` user created by the ``postgres-9.3`` package when it was ``apt-get installed``
-USER postgres
+RUN chkconfig postgresql-9.3 on
 
-# Create a PostgreSQL role named ``docker`` with ``docker`` as the password and
-# then create a database `docker` owned by the ``docker`` role.
-# Note: here we use ``&&\`` to run commands one after the other - the ``\``
-#       allows the RUN command to span multiple lines.
-RUN    /etc/init.d/postgresql start &&\
-    psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';" &&\
-    createdb -O docker docker
+CMD service postgresql-9.3 start
 
-# Adjust PostgreSQL configuration so that remote connections to the
-# database are possible.
-RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.3/main/pg_hba.conf
-
-# And add ``listen_addresses`` to ``/etc/postgresql/9.3/main/postgresql.conf``
-RUN echo "listen_addresses='*'" >> /etc/postgresql/9.3/main/postgresql.conf
-
-# Expose the PostgreSQL port
-EXPOSE 5432
-
-# Add VOLUMEs to allow backup of config, logs and databases
-VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
-
-# Set the default command to run when starting the container
-CMD ["/usr/lib/postgresql/9.3/bin/postgres", "-D", "/var/lib/postgresql/9.3/main", "-c", "config_file=/etc/postgresql/9.3/main/postgresql.conf"]
+# Install psycopg2
+RUN pip install psycopg2
