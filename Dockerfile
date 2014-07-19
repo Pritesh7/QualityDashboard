@@ -18,6 +18,27 @@ RUN su -c 'rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6
 # Install nginx
 RUN yum install -y nginx
 
+
+# Installing Postgres
+ADD ./postgres/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo
+
+RUN yum localinstall -y http://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-centos93-9.3-1.noarch.rpm
+
+RUN yum install -y postgresql93-server
+
+RUN service postgresql-9.3 initdb
+
+RUN chkconfig postgresql-9.3 on
+
+CMD service postgresql-9.3 start
+
+# Add Postgres bin directoy to path
+RUN export PATH=$PATH:/usr/pgsql-9.3/bin
+
+# Install psycopg2
+RUN pip install psycopg2
+
+
 RUN cd /home
 
 # Install python dev tools
@@ -76,19 +97,3 @@ RUN pip install pysolr
 # Make port 8000 available to host
 EXPOSE 8000
 
-
-# Installing Postgres
-ADD ./postgres/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo
-
-RUN yum localinstall -y http://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-centos93-9.3-1.noarch.rpm
-
-RUN yum install -y postgresql93-server
-
-RUN service postgresql-9.3 initdb
-
-RUN chkconfig postgresql-9.3 on
-
-CMD service postgresql-9.3 start
-
-# Install psycopg2
-RUN pip install psycopg2
