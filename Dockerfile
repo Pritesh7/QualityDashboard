@@ -97,3 +97,6 @@ RUN pip install pysolr
 # Make port 8000 available to host
 EXPOSE 8000
 
+# Copy python scripts to container
+ADD ./SolrMonitor /home/quality_assurance/SolrMonitor
+
