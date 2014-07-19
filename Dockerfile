@@ -59,7 +59,7 @@ RUN pip install pysolr
 #RUN django-admin.py startproject dashboard
 
 # Copy uwsgi params file into the docker container
-ADD ./nginx/uwsgi_params /home/quality_assurance/dashboard/uwsgi_params
+#ADD ./nginx/uwsgi_params /home/quality_assurance/dashboard/uwsgi_params
 
 # Copy nginx config file needed for server settings
 # ADD ./nginx/dashboard_nginx.conf /home/quality_assurance/dashboard/dashboard/dashboard_nginx.conf
