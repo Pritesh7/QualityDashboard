@@ -36,7 +36,7 @@ CMD service postgresql-9.3 start
 RUN export PATH=$PATH:/usr/pgsql-9.3/bin
 
 # Install psycopg2
-RUN pip install psycopg2
+RUN yum install -y python-psycopg2
 
 
 RUN cd /home
