@@ -42,7 +42,7 @@ RUN echo "local   all             all                                     md5" >
 RUN echo "host    all             all             127.0.0.1/32            md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
 RUN echo "host    all             all             ::1/128                 md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
 
-RUN service postgresql-9.3 restart
+RUN service postgresql-9.3 start
 
 # Create database
 RUN su - postgres -c "psql -U postgres -c \"CREATE DATABASE quality_dashboard WITH OWNER = postgres;\""
