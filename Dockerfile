@@ -58,8 +58,8 @@ RUN yum install -y vim
 RUN cd /home
 
 # Install python dev tools
-RUN yum groupinstall -y "Development Tools"
-RUN yum install -y python-devel zlib-devel
+#RUN yum groupinstall -y "Development Tools"
+#RUN yum install -y python-devel zlib-devel
 
 # Install wget to retrieve python source
 RUN yum install -y wget
@@ -69,22 +69,22 @@ RUN wget https://raw.github.com/pypa/pip/master/contrib/get-pip.py
 RUN python get-pip.py
 
 # Install uwsgi
-RUN pip install uwsgi
+#RUN pip install uwsgi
 
 # Install Virtualenv
-RUN pip install virtualenv
+#RUN pip install virtualenv
 
 # Install virtualenvwrapper
-RUN pip install virtualenvwrapper
+#RUN pip install virtualenvwrapper
 
 # Create directory for Quality Assurance Dashboard
 Run mkdir /home/quality_assurance
 
 # Start the new virtual environment that the django site will be run from
-RUN virtualenv /home/quality_assurance/env
+#RUN virtualenv /home/quality_assurance/env
 
 # Make the virtual environment active
-RUN source /home/quality_assurance/env/bin/activate
+#RUN source /home/quality_assurance/env/bin/activate
 
 # Install Pysolr
 RUN pip install pysolr
@@ -112,6 +112,7 @@ RUN pip install pysolr
 
 # Make port 8000 available to host
 EXPOSE 8000
+EXPOSE 5432
 
 # Copy python scripts to container
 ADD ./SolrMonitor /home/quality_assurance/SolrMonitor
