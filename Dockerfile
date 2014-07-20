@@ -43,16 +43,10 @@ RUN echo "host    all             all             127.0.0.1/32            md5" >
 RUN echo "host    all             all             ::1/128                 md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
 
 RUN service postgresql-9.3 start &&\
-    su - postgres -c "psql -U postgres -c \"CREATE DATABASE quality_dashboard WITH OWNER = postgres;\""
-
-# Create solr_query_time table
-RUN su - postgres -c "psql -U postgres -d quality_dashboard -c \"CREATE TABLE solr_query_time (id serial NOT NULL, request_time timestamp with time zone NOT NULL, response_time integer NOT NULL, CONSTRAINT solr_query_time_pkey PRIMARY KEY (id));\""
-
-# Create solr_uptime table
-RUN su - postgres -c "psql -U postgres -d quality_dashboard -c \"CREATE TABLE solr_uptime (id serial NOT NULL, request_time timestamp without time zone NOT NULL, response_time integer, CONSTRAINT id PRIMARY KEY (id));\""
-
-# Update the password for the postgres user (ONLY FOR DEVELOPMENT PURPOSES)
-RUN su - postgres -c "psql -U postgres -d postgres -c \"alter user postgres with password 'postgres';\""
+    su - postgres -c "psql -U postgres -c \"CREATE DATABASE quality_dashboard WITH OWNER = postgres;\"" &&\
+    su - postgres -c "psql -U postgres -d quality_dashboard -c \"CREATE TABLE solr_query_time (id serial NOT NULL, request_time timestamp with time zone NOT NULL, response_time integer NOT NULL, CONSTRAINT solr_query_time_pkey PRIMARY KEY (id));\"" &&\
+    su - postgres -c "psql -U postgres -d quality_dashboard -c \"CREATE TABLE solr_uptime (id serial NOT NULL, request_time timestamp without time zone NOT NULL, response_time integer, CONSTRAINT id PRIMARY KEY (id));\"" &&\
+    su - postgres -c "psql -U postgres -d postgres -c \"alter user postgres with password 'postgres';\""
 
 # Install psycopg2
 RUN yum install -y python-psycopg2
