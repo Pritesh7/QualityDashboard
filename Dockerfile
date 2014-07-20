@@ -33,8 +33,9 @@ RUN chkconfig postgresql-9.3 on
 # Add Postgres bin directoy to path
 RUN export PATH=$PATH:/usr/pgsql-9.3/bin
 
-ADD ./postgres/pg_hba.conf /var/lib/pgsql/9.3/data/pg_hba.conf &&/
-    service postgresql-9.3 stop
+RUN service postgresql-9.3 stop
+
+ADD ./postgres/pg_hba.conf /var/lib/pgsql/9.3/data/pg_hba.conf
 
 #RUN echo "host all  all    0.0.0.0/0  md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
 #RUN echo "local   all             all                                     md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
