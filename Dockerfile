@@ -16,7 +16,7 @@ RUN yum update -y
 RUN su -c 'rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm'
 
 # Install nginx
-RUN yum install -y nginx
+#RUN yum install -y nginx
 
 
 # Installing Postgres
@@ -42,10 +42,8 @@ RUN echo "local   all             all                                     md5" >
 RUN echo "host    all             all             127.0.0.1/32            md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
 RUN echo "host    all             all             ::1/128                 md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
 
-RUN service postgresql-9.3 start
-
-# Create database
-RUN su - postgres -c "psql -U postgres -c \"CREATE DATABASE quality_dashboard WITH OWNER = postgres;\""
+RUN service postgresql-9.3 start &&\
+    su - postgres -c "psql -U postgres -c \"CREATE DATABASE quality_dashboard WITH OWNER = postgres;\""
 
 # Create solr_query_time table
 RUN su - postgres -c "psql -U postgres -d quality_dashboard -c \"CREATE TABLE solr_query_time (id serial NOT NULL, request_time timestamp with time zone NOT NULL, response_time integer NOT NULL, CONSTRAINT solr_query_time_pkey PRIMARY KEY (id));\""
