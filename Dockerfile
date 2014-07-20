@@ -35,6 +35,12 @@ RUN export PATH=$PATH:/usr/pgsql-9.3/bin
 
 RUN service postgresql-9.3 stop
 
+RUN service postgresql-9.3 start &&\
+    su - postgres -c "psql -U postgres -c \"CREATE DATABASE quality_dashboard WITH OWNER = postgres;\"" &&\
+    su - postgres -c "psql -U postgres -d quality_dashboard -c \"CREATE TABLE solr_query_time (id serial NOT NULL, request_time timestamp with time zone NOT NULL, response_time integer NOT NULL, CONSTRAINT solr_query_time_pkey PRIMARY KEY (id));\"" &&\
+    su - postgres -c "psql -U postgres -d quality_dashboard -c \"CREATE TABLE solr_uptime (id serial NOT NULL, request_time timestamp without time zone NOT NULL, response_time integer, CONSTRAINT id PRIMARY KEY (id));\"" &&\
+    su - postgres -c "psql -U postgres -d postgres -c \"alter user postgres with password 'postgres';\""
+
 ADD ./postgres/pg_hba.conf /var/lib/pgsql/9.3/data/pg_hba.conf
 
 RUN echo "host all  all    0.0.0.0/0  md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
@@ -46,11 +52,7 @@ RUN chown postgres:postgres /var/lib/pgsql/9.3/data/pg_hba.conf
 #RUN echo "host    all             all             127.0.0.1/32            md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
 #RUN echo "host    all             all             ::1/128                 md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
 
-RUN service postgresql-9.3 start &&\
-    su - postgres -c "psql -U postgres -c \"CREATE DATABASE quality_dashboard WITH OWNER = postgres;\"" &&\
-    su - postgres -c "psql -U postgres -d quality_dashboard -c \"CREATE TABLE solr_query_time (id serial NOT NULL, request_time timestamp with time zone NOT NULL, response_time integer NOT NULL, CONSTRAINT solr_query_time_pkey PRIMARY KEY (id));\"" &&\
-    su - postgres -c "psql -U postgres -d quality_dashboard -c \"CREATE TABLE solr_uptime (id serial NOT NULL, request_time timestamp without time zone NOT NULL, response_time integer, CONSTRAINT id PRIMARY KEY (id));\"" &&\
-    su - postgres -c "psql -U postgres -d postgres -c \"alter user postgres with password 'postgres';\""
+
 
 # Install psycopg2
 RUN yum install -y python-psycopg2
