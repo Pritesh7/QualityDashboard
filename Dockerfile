@@ -30,6 +30,9 @@ RUN service postgresql-9.3 initdb
 
 RUN chkconfig postgresql-9.3 on
 
+# Add Postgres bin directoy to path
+RUN export PATH=$PATH:/usr/pgsql-9.3/bin
+
 ADD ./postgres/pg_hba.conf /var/lib/pgsql/9.3/data/pg_hba.conf
 
 RUN service postgresql-9.3 restart
@@ -45,9 +48,6 @@ RUN su - postgres -c "psql -U postgres -d quality_dashboard -c \"CREATE TABLE so
 
 # Update the password for the postgres user (ONLY FOR DEVELOPMENT PURPOSES)
 RUN su - postgres -c "psql -U postgres -d postgres -c \"alter user postgres with password 'postgres';\""
-
-# Add Postgres bin directoy to path
-RUN export PATH=$PATH:/usr/pgsql-9.3/bin
 
 # Install psycopg2
 RUN yum install -y python-psycopg2
