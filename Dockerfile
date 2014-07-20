@@ -7,7 +7,7 @@
 FROM centos:centos6
 
 # File Author / Maintainer
-MAINTAINER Joe Wogan
+MAINTAINER Pritesh Patel
 
 # Update the yum resource list to be used
 RUN yum update -y
@@ -30,13 +30,30 @@ RUN service postgresql-9.3 initdb
 
 RUN chkconfig postgresql-9.3 on
 
-CMD service postgresql-9.3 start
+ADD ./postgres/pg_hba.conf /var/lib/pgsql/9.3/data/pg_hba.conf
+
+RUN service postgresql-9.3 restart
+
+# Create database
+RUN su - postgres -c "psql -U postgres -c \"CREATE DATABASE quality_dashboard WITH OWNER = postgres;\""
+
+# Create solr_query_time table
+RUN su - postgres -c "psql -U postgres -d quality_dashboard -c \"CREATE TABLE solr_query_time (id serial NOT NULL, request_time timestamp with time zone NOT NULL, response_time integer NOT NULL, CONSTRAINT solr_query_time_pkey PRIMARY KEY (id));\""
+
+# Create solr_uptime table
+RUN su - postgres -c "psql -U postgres -d quality_dashboard -c \"CREATE TABLE solr_uptime (id serial NOT NULL, request_time timestamp without time zone NOT NULL, response_time integer, CONSTRAINT id PRIMARY KEY (id));\""
+
+# Update the password for the postgres user (ONLY FOR DEVELOPMENT PURPOSES)
+RUN su - postgres -c "psql -U postgres -d postgres -c \"alter user postgres with password 'postgres';\""
 
 # Add Postgres bin directoy to path
 RUN export PATH=$PATH:/usr/pgsql-9.3/bin
 
 # Install psycopg2
 RUN yum install -y python-psycopg2
+
+# Install Vim
+RUN yum install -y vim
 
 
 RUN cd /home
