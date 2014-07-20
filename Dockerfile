@@ -33,6 +33,8 @@ RUN chkconfig postgresql-9.3 on
 # Add Postgres bin directoy to path
 RUN export PATH=$PATH:/usr/pgsql-9.3/bin
 
+RUN service postgresql-9.3 restart
+
 ADD ./postgres/pg_hba.conf /var/lib/pgsql/9.3/data/pg_hba.conf
 
 RUN service postgresql-9.3 restart
