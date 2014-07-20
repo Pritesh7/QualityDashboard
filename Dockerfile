@@ -47,19 +47,14 @@ RUN echo "host all  all    0.0.0.0/0  md5" >> /var/lib/pgsql/9.3/data/pg_hba.con
 
 RUN chown postgres:postgres /var/lib/pgsql/9.3/data/pg_hba.conf
 
-
-#RUN echo "local   all             all                                     md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
-#RUN echo "host    all             all             127.0.0.1/32            md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
-#RUN echo "host    all             all             ::1/128                 md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
-
-
-
 # Install psycopg2
 RUN yum install -y python-psycopg2
 
 # Install Vim
 RUN yum install -y vim
 
+# Install Crontab
+RUN yum install -y vixie-cron
 
 RUN cd /home
 
