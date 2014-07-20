@@ -33,14 +33,13 @@ RUN chkconfig postgresql-9.3 on
 # Add Postgres bin directoy to path
 RUN export PATH=$PATH:/usr/pgsql-9.3/bin
 
-RUN service postgresql-9.3 restart
+ADD ./postgres/pg_hba.conf /var/lib/pgsql/9.3/data/pg_hba.conf &&/
+service postgresql-9.3 stop
 
-#ADD ./postgres/pg_hba.conf /var/lib/pgsql/9.3/data/pg_hba.conf
-
-RUN echo "host all  all    0.0.0.0/0  md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
-RUN echo "local   all             all                                     md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
-RUN echo "host    all             all             127.0.0.1/32            md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
-RUN echo "host    all             all             ::1/128                 md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
+#RUN echo "host all  all    0.0.0.0/0  md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
+#RUN echo "local   all             all                                     md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
+#RUN echo "host    all             all             127.0.0.1/32            md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
+#RUN echo "host    all             all             ::1/128                 md5" >> /var/lib/pgsql/9.3/data/pg_hba.conf
 
 RUN service postgresql-9.3 start &&\
     su - postgres -c "psql -U postgres -c \"CREATE DATABASE quality_dashboard WITH OWNER = postgres;\"" &&\
