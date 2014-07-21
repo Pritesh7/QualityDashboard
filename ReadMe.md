@@ -6,6 +6,12 @@
 docker build . -t quality_dashboard
 ```
 
+## Edit the python script - SolrMonitor.py - to ensure it is pointing to your solr url
+
+```
+vim /home/quality_assurance/SolrMonitor/SolrMonitor.py
+```
+
 ## Start the Postgres and Cron daemon services
 
 ```
