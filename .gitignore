@@ -60,3 +60,6 @@ target/
 
 # Vagrant Folder
 /vagrant
+
+# Sites Folder
+/sites
